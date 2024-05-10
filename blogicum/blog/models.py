@@ -6,9 +6,8 @@ User = get_user_model()
 
 
 class Category(BaseModel):
-    """
-    Тематическая категория
-    """
+    """Тематическая категория"""
+
     title = models.CharField('Заголовок', max_length=256)
     description = models.TextField('Описание')
     slug = models.SlugField(
@@ -27,9 +26,8 @@ class Category(BaseModel):
 
 
 class Location(BaseModel):
-    """
-    Географическая метка
-    """
+    """Географическая метка"""
+
     name = models.CharField('Название места', max_length=256)
 
     class Meta:
@@ -38,9 +36,8 @@ class Location(BaseModel):
 
 
 class Post(BaseModel):
-    """
-    Публикация
-    """
+    """Публикация"""
+
     title = models.CharField('Заголовок', max_length=256)
     text = models.TextField('Текст')
     pub_date = models.DateTimeField(
