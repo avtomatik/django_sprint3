@@ -5,12 +5,22 @@ from django.utils import timezone
 from .models import Category, Post
 
 
-def index(request):
-    template = 'blog/index.html'
-    post_list = Post.objects.filter(
+def fetch_required(db_manager):
+    # =========================================================================
+    # TODO: Replace with Custom Manager
+    # =========================================================================
+    return db_manager.filter(
         pub_date__lte=timezone.now(),
         is_published=True,
         category__is_published=True
+    )
+
+
+def index(request):
+    template = 'blog/index.html'
+    FIELDS = ('author', 'category', 'location')
+    post_list = fetch_required(
+        Post.objects.select_related(*FIELDS)
     )[:settings.DEFAULT_LIMIT]
     context = {
         'post_list': post_list,
@@ -21,11 +31,8 @@ def index(request):
 def post_detail(request, pk):
     template = 'blog/detail.html'
     post = get_object_or_404(
-        Post,
+        fetch_required(Post.objects),
         pk=pk,
-        pub_date__lte=timezone.now(),
-        is_published=True,
-        category__is_published=True
     )
     context = {
         'post': post,
@@ -41,10 +48,9 @@ def category_posts(request, category_slug):
         is_published=True
     )
     post_list = get_list_or_404(
-        Post,
+        category.posts.all(),
         pub_date__lte=timezone.now(),
         is_published=True,
-        category=category
     )
     context = {
         'category': category,
