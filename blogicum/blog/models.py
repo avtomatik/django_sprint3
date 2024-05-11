@@ -1,6 +1,8 @@
-from core.models import BaseModel
 from django.contrib.auth import get_user_model
 from django.db import models
+
+from core.models import BaseModel
+from .constants import MAX_LENGTH_CHAR, MAX_LENGTH_SLUG
 
 User = get_user_model()
 
@@ -8,11 +10,11 @@ User = get_user_model()
 class Category(BaseModel):
     """Тематическая категория"""
 
-    title = models.CharField('Заголовок', max_length=256)
+    title = models.CharField('Заголовок', max_length=MAX_LENGTH_CHAR)
     description = models.TextField('Описание')
     slug = models.SlugField(
         'Идентификатор',
-        max_length=64,
+        max_length=MAX_LENGTH_SLUG,
         unique=True,
         help_text=(
             'Идентификатор страницы для URL; разрешены символы латиницы, '
@@ -28,7 +30,7 @@ class Category(BaseModel):
 class Location(BaseModel):
     """Географическая метка"""
 
-    name = models.CharField('Название места', max_length=256)
+    name = models.CharField('Название места', max_length=MAX_LENGTH_CHAR)
 
     class Meta:
         verbose_name = 'местоположение'
@@ -38,7 +40,7 @@ class Location(BaseModel):
 class Post(BaseModel):
     """Публикация"""
 
-    title = models.CharField('Заголовок', max_length=256)
+    title = models.CharField('Заголовок', max_length=MAX_LENGTH_CHAR)
     text = models.TextField('Текст')
     pub_date = models.DateTimeField(
         'Дата и время публикации',
@@ -56,6 +58,7 @@ class Post(BaseModel):
         Location,
         on_delete=models.SET_NULL,
         verbose_name='Местоположение',
+        blank=True,
         null=True
     )
     category = models.ForeignKey(
