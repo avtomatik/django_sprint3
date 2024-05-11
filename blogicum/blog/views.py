@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.utils import timezone
 
@@ -10,7 +11,7 @@ def index(request):
         pub_date__lte=timezone.now(),
         is_published=True,
         category__is_published=True
-    ).order_by('-pub_date')[:5]
+    )[:settings.DEFAULT_LIMIT]
     context = {
         'post_list': post_list,
     }
