@@ -9,7 +9,8 @@ def fetch_required(db_manager):
     # =========================================================================
     # TODO: Replace with Custom Manager
     # =========================================================================
-    return db_manager.filter(
+    FIELDS = ('author', 'category', 'location')
+    return db_manager.select_related(*FIELDS).filter(
         pub_date__lte=timezone.now(),
         is_published=True,
         category__is_published=True
@@ -18,10 +19,7 @@ def fetch_required(db_manager):
 
 def index(request):
     template = 'blog/index.html'
-    FIELDS = ('author', 'category', 'location')
-    post_list = fetch_required(
-        Post.objects.select_related(*FIELDS)
-    )[:settings.DEFAULT_LIMIT]
+    post_list = fetch_required(Post.objects)[:settings.DEFAULT_LIMIT]
     context = {
         'post_list': post_list,
     }
@@ -30,10 +28,7 @@ def index(request):
 
 def post_detail(request, pk):
     template = 'blog/detail.html'
-    post = get_object_or_404(
-        fetch_required(Post.objects),
-        pk=pk,
-    )
+    post = get_object_or_404(fetch_required(Post.objects), pk=pk)
     context = {
         'post': post,
     }
@@ -47,11 +42,7 @@ def category_posts(request, category_slug):
         slug=category_slug,
         is_published=True
     )
-    post_list = get_list_or_404(
-        category.posts.all(),
-        pub_date__lte=timezone.now(),
-        is_published=True,
-    )
+    post_list = get_list_or_404(fetch_required(category.posts.all()))
     context = {
         'category': category,
         'post_list': post_list,
